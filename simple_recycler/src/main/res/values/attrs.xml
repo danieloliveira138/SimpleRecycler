@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="simplerecyclerview">
+        <attr name="name" format="string" />
+
+        <attr name="layout_manager" format="enum">
+            <enum name="linear_layout" value="0" />
+            <enum name="grid_layout" value="1" />
+            <enum name="staggered_layout" value="2" />
+        </attr>
+
+        <attr name="orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="span_count" format="integer" />
+    </declare-styleable>
+</resources>

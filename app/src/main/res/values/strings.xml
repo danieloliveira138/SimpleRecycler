@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SimpleRecycler</string>
+    <string name="add_elements">Add element</string>
 </resources>
