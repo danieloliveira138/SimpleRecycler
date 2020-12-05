@@ -16,8 +16,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         simpleRecycler.listBuilder(
-                layoutRes = R.layout.holder_example,
-                itemCount = list.size
+            layoutRes = R.layout.holder_example,
+            itemCount = list.size,
+            refreshListener = {
+                list.clear()
+                for (i in 0..10) {
+                    list.add(getRandomNumber())
+                }
+                simpleRecycler.submitItems(list.size)
+                simpleRecycler.isRefreshLoading(false)
+            }
         ) { view, position ->
 
             view.name.text = list[position].toString()
@@ -28,7 +36,6 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                 ).show()
             }
-
         }
 
         addElements.setOnClickListener {
@@ -41,15 +48,6 @@ class MainActivity : AppCompatActivity() {
         simpleRecycler.onPaginationListener(1) {
 
             Toast.makeText(this, "Page size: $it", Toast.LENGTH_SHORT).show()
-        }
-
-        simpleRecycler.onRefreshRecycler {
-            list.clear()
-            for (i in 0..10) {
-                list.add(getRandomNumber())
-            }
-            simpleRecycler.submitItems(list.size)
-            simpleRecycler.isRefreshLoading(false)
         }
     }
 

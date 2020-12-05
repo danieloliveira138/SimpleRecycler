@@ -28,10 +28,13 @@ class SimpleRecycler(
                 (recycler.adapter as SimpleRecyclerAdapter).loading = field
         }
     private var totalItemsLoaded = false
+    private var isRefreshListener = false
 
     fun listBuilder(
         layoutRes: Int,
         itemCount: Int,
+        refreshListener: (() -> Unit)? = null,
+        paginationListener: ((Int) -> Unit)? = null,
         builder: (View, Int) -> Unit
     ) {
         recycler.apply {
@@ -42,7 +45,10 @@ class SimpleRecycler(
                     builder.invoke(view, position)
                 }
             )
+
             this.layoutManager = getCustomLayoutManager()
+
+            refreshListener?.let { onRefreshRecycler(it) }
         }
     }
 
@@ -68,7 +74,10 @@ class SimpleRecycler(
     }
 
     fun onRefreshRecycler(func: () -> Unit) {
-        swipeRefreshLayout.setOnRefreshListener(func)
+        swipeRefreshLayout.apply {
+            isEnabled = true
+            setOnRefreshListener(func)
+        }
     }
 
     fun isRefreshLoading(enable: Boolean) {
