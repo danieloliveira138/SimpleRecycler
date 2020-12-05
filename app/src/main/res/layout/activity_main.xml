@@ -9,8 +9,10 @@
     <com.catra.simple_recycler.SimpleRecycler
         android:id="@+id/simpleRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:orientation="vertical" />
+        android:layout_height="0dp"
+        app:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/addElements"/>
 
     <Button
         android:id="@+id/addElements"

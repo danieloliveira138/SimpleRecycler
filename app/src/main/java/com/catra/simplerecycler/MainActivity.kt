@@ -32,8 +32,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         addElements.setOnClickListener {
-            list.add(getRandomNumber())
+            for (i in 0..10) {
+                list.add(getRandomNumber())
+            }
             simpleRecycler.submitItems(list.size)
+        }
+
+        simpleRecycler.onPaginationListener(1) {
+
+            Toast.makeText(this, "Page size: $it", Toast.LENGTH_SHORT).show()
+        }
+
+        simpleRecycler.onRefreshRecycler {
+            list.clear()
+            for (i in 0..10) {
+                list.add(getRandomNumber())
+            }
+            simpleRecycler.submitItems(list.size)
+            simpleRecycler.isRefreshLoading(false)
         }
     }
 

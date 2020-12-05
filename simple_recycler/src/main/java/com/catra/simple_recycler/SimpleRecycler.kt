@@ -9,7 +9,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.catra.simple_recycler.listeners.PaginationListener
 
 class SimpleRecycler(
     context: Context,
@@ -17,14 +20,20 @@ class SimpleRecycler(
 ) : ConstraintLayout(context, attrs) {
 
     private val recycler: RecyclerView
+    private val swipeRefreshLayout: SwipeRefreshLayout
     private val attributes: TypedArray
+    private var isLoading = false
+        set(value) {
+                field = value
+                (recycler.adapter as SimpleRecyclerAdapter).loading = field
+        }
+    private var totalItemsLoaded = false
 
     fun listBuilder(
         layoutRes: Int,
         itemCount: Int,
         builder: (View, Int) -> Unit
     ) {
-
         recycler.apply {
             adapter = SimpleRecyclerAdapter(
                 layoutRes = layoutRes,
@@ -37,11 +46,41 @@ class SimpleRecycler(
         }
     }
 
+    fun onPaginationListener(
+        pageSize: Int,
+        func: (Int) -> Unit
+    ) = with(recycler) {
+
+        addOnScrollListener(PaginationListener(
+            this.layoutManager as LinearLayoutManager,
+            pageSize,
+            isLoading = {
+                isLoading
+            },
+            totalItemsLoaded = {
+                totalItemsLoaded
+            },
+            loadMoreItems = {
+                isLoading = true
+                func.invoke(it)
+            }
+        ))
+    }
+
+    fun onRefreshRecycler(func: () -> Unit) {
+        swipeRefreshLayout.setOnRefreshListener(func)
+    }
+
+    fun isRefreshLoading(enable: Boolean) {
+        swipeRefreshLayout.isRefreshing = enable
+    }
+
     fun submitItems(itemCount: Int) {
+        isLoading = false
         (recycler.adapter as? SimpleRecyclerAdapter)?.addItemCount(itemCount)
     }
 
-    private fun getCustomLayoutManager(): RecyclerView.LayoutManager {
+    private fun getCustomLayoutManager(): LayoutManager {
         val layoutType = attributes.getInt(R.styleable.simplerecyclerview_layout_manager, 0)
         val layoutOrientation = attributes.getInt(R.styleable.simplerecyclerview_orientation, 1)
         val spanCount = attributes.getInt(R.styleable.simplerecyclerview_span_count, 1)
@@ -57,6 +96,8 @@ class SimpleRecycler(
         LayoutInflater.from(context).inflate(R.layout.simple_recycler_layout, this)
 
         recycler = findViewById(R.id.recycler)
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
 
         attributes = context.theme.obtainStyledAttributes(
             attrs,
