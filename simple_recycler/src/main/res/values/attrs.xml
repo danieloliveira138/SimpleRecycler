@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="simplerecyclerview">
         <attr name="name" format="string" />
+        <attr name="item_layout" format="reference" />
 
         <attr name="layout_manager" format="enum">
             <enum name="linear_layout" value="0" />
