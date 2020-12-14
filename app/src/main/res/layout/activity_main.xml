@@ -10,6 +10,7 @@
         android:id="@+id/simpleRecycler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:item_layout="@layout/holder_example"
         app:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/addElements"/>

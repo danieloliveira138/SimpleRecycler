@@ -16,7 +16,11 @@ class SimpleRecyclerAdapter (
         set(value) {
             if (field == value) return
             field = value
-            if (value) itemCount + 1 else itemCount - 1
+            if (value) {
+                itemCount + 1
+            } else {
+                itemCount - 1
+            }
             notifyDataSetChanged()
         }
 

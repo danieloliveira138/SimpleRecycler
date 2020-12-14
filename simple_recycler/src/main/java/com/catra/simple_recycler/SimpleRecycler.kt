@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.catra.simple_recycler.listeners.PaginationListener
 
+private const val UNDEFINED = -1
+
 class SimpleRecycler(
     context: Context,
     attrs: AttributeSet?
@@ -21,30 +23,33 @@ class SimpleRecycler(
 
     private val recycler: RecyclerView
     private val swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var simpleRecyclerAdapter: SimpleRecyclerAdapter
+    private val itemLayout: Int?
     private val attributes: TypedArray
     private var isLoading = false
         set(value) {
                 field = value
-                (recycler.adapter as SimpleRecyclerAdapter).loading = field
+                (recycler.adapter as? SimpleRecyclerAdapter)?.loading = field
         }
     private var totalItemsLoaded = false
     private var isRefreshListener = false
 
     fun listBuilder(
-        layoutRes: Int,
         itemCount: Int,
+        holderLayout: Int? = null,
         refreshListener: (() -> Unit)? = null,
-        paginationListener: ((Int) -> Unit)? = null,
         builder: (View, Int) -> Unit
     ) {
+        simpleRecyclerAdapter = SimpleRecyclerAdapter(
+            layoutRes = holderLayout ?: itemLayout ?: return,
+            itemCount = itemCount,
+            view = { view: View, position: Int ->
+                builder.invoke(view, position)
+            }
+        )
+
         recycler.apply {
-            adapter = SimpleRecyclerAdapter(
-                layoutRes = layoutRes,
-                itemCount = itemCount,
-                view = { view: View, position: Int ->
-                    builder.invoke(view, position)
-                }
-            )
+            adapter = simpleRecyclerAdapter
 
             this.layoutManager = getCustomLayoutManager()
 
@@ -67,8 +72,10 @@ class SimpleRecycler(
                 totalItemsLoaded
             },
             loadMoreItems = {
-                isLoading = true
-                func.invoke(it)
+                post {
+                    isLoading = true
+                    func.invoke(it)
+                }
             }
         ))
     }
@@ -113,6 +120,14 @@ class SimpleRecycler(
             R.styleable.simplerecyclerview,
             0, 0
         )
+
+        itemLayout = attributes
+            .getResourceId(
+                R.styleable.simplerecyclerview_item_layout,
+                UNDEFINED
+            ).takeIf {
+                it != UNDEFINED
+            }
 
         recycler.apply {
             layoutManager = getCustomLayoutManager()

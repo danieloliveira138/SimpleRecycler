@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         simpleRecycler.listBuilder(
-            layoutRes = R.layout.holder_example,
             itemCount = list.size,
             refreshListener = {
                 list.clear()
